@@ -26,9 +26,14 @@ ffmpeg -y \
 "{output}"
 """
 
-    exit_code = os.system(cmd)
+    result = os.system(cmd)
 
-    if exit_code != 0:
+    if result != 0:
         return {"error": "ffmpeg failed"}, 500
 
     return send_file(output, mimetype="video/mp4")
+
+
+# 🔥 IMPORTANTE: Render precisa disso
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
