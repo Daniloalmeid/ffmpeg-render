@@ -1,5 +1,6 @@
 from flask import Flask, request, send_file
 import os
+import uuid
 
 app = Flask(__name__)
 
@@ -10,9 +11,9 @@ def render():
     image = data["image"]
     audio = data["audio"]
 
-    output = "/tmp/output.mp4"
+    output = f"/tmp/{uuid.uuid4()}.mp4"
 
-    cmd = f'''
+    cmd = f"""
 ffmpeg -y \
 -loop 1 -i "{image}" \
 -i "{audio}" \
@@ -23,11 +24,11 @@ ffmpeg -y \
 -r 30 \
 -s 1080x1920 \
 "{output}"
-'''
+"""
 
-    os.system(cmd)
+    exit_code = os.system(cmd)
+
+    if exit_code != 0:
+        return {"error": "ffmpeg failed"}, 500
 
     return send_file(output, mimetype="video/mp4")
-
-
-app.run(host="0.0.0.0", port=10000)
